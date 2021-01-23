@@ -53,10 +53,10 @@ u1, v1 = 0, 0
 u2, v2 = 8, 8  # 0~8(uが→方向　vが下方向)
 camNum1 = u1 * 9 + v1
 camNum2 = u2 * 9 + v2
-cgPath = False
-setFPAuto = False
-useManualFP = False
-require_midas = True
+cgPath = True
+setFPAuto = True
+useManualFP = True
+require_midas = False
 # longerSideLen = 160
 # longerSideLen = 1008
 longerSideLen = 640
@@ -67,9 +67,9 @@ renderingPly = {
     4: "mesh1+mesh2_1",
 }
 renderingMode = 1
-# content = "additional"
+content = "additional"
 # content = "lf"
-content = "ori"
+# content = "ori"
 
 if content == "ori":
     basePath = "/home/takashi/Desktop/dataset/image"
