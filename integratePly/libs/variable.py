@@ -41,6 +41,7 @@ def matLoad(u, v):
 
 
 def longerResize(img, longerSideLen=640):
+    # print(img.shape[0])
     longer = max(img.shape[0], img.shape[1])
     fraq = float(longerSideLen) / float(longer)
     if fraq < 1:
@@ -55,7 +56,7 @@ camNum1 = u1 * 9 + v1
 camNum2 = u2 * 9 + v2
 cgPath = True
 setFPAuto = True
-useManualFP = True
+useManualFP = False
 require_midas = False
 # longerSideLen = 160
 # longerSideLen = 1008
@@ -118,10 +119,10 @@ if require_midas:
         dispImg2 = cv2.imread("./depth/" + imgName2 + ".png", 0)
         # print("\n\nimg:", dispImg1)
     if "dispImg1" in locals():
-        min, max = np.min(dispImg1), np.max(dispImg1)
-        dispImg1 = (dispImg1 - min) / (max - min) * 10 + 90
-        min, max = np.min(dispImg2), np.max(dispImg2)
-        dispImg2 = (dispImg2 - min) / (max - min) * 10 + 90
+        Min, Max = np.min(dispImg1), np.max(dispImg1)
+        dispImg1 = (dispImg1 - Min) / (Max - Min) * 10 + 90
+        Min, Max = np.min(dispImg2), np.max(dispImg2)
+        dispImg2 = (dispImg2 - Min) / (Max - Min) * 10 + 90
         # print(dispImg1)
 
 
@@ -129,8 +130,8 @@ else:
     dispImg1 = matLoad(u1, v1)
     dispImg2 = matLoad(u2, v2)
     # print(np.max(dispImg1), np.min(dispImg1))
-    max, min = np.max(dispImg1), np.min(dispImg1)
-    cv2.imwrite("antinous.png", (dispImg1 - min) / (max - min) * 255)
+    Max, Min = np.max(dispImg1), np.min(dispImg1)
+    cv2.imwrite("antinous.png", (dispImg1 - Min) / (Max - Min) * 255)
 
 # ここをMidasOnlyから出てきたNpyに書き換える
 # Depthとかは正直おかしいかもしれないが、そこに関してはスルー

@@ -14,7 +14,9 @@ def main():
     mesh2_fi = "./mesh/" + imgName2 + ".ply"
     mono_save_fi = "./mesh/" + saveName + ".ply"
     save_fi = "./mesh/" + saveName + "_integrated.ply"
-    npyPath = "./M/" + saveName + ".npy"
+    middleName = "middleM"
+    # npyPath = "./M/" + saveName + ".npy"
+    npyPath = "./M/" + middleName + ".npy"
     mesh1 = Ply(mesh1_fi)
     mesh2 = Ply(mesh2_fi)
     # mesh1.changeColor(r=0, g=0, b=255, sigma=1.0)

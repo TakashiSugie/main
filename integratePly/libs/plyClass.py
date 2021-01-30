@@ -140,6 +140,12 @@ class Ply:
 
     def dotsM(self, npyPath):
         M = np.load(npyPath)
+        if M.shape == (4, 4):
+            # print("ooooo")
+            M = M[:3, :]
+            print(M)
+            # print(M.shape)
+        # print()
         ones = np.ones((len(self.verts_np), 1))
         oldV = np.concatenate((self.verts_np, ones), axis=1)
         NewV = np.dot(M, oldV.T)

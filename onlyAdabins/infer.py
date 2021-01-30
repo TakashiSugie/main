@@ -186,6 +186,7 @@ if __name__ == "__main__":
         imgPath2,
         require_midas,
         longerSideLen,
+        longerResize,
     )
 
     # imgPathList = glob.glob("./testDir/*png")
@@ -195,11 +196,15 @@ if __name__ == "__main__":
     for imgPath in imgPathList:
         noExtName = os.path.splitext(os.path.basename(imgPath))[0]
         start = time()
-        img = Image.open(imgPath)
+        # img = Image.open(imgPath)
+        img = cv2.imread(imgPath)
+        img = longerResize(img)
         inferHelper = InferenceHelper()
         _, pred = inferHelper.predict_pil(img)
+        # print(img.shape)
         pred_save = pred[0, 0]
-        max, min = np.max(pred_save), np.min(pred_save)
+        # pred_save = pred
+        Max, Min = np.max(pred_save), np.min(pred_save)
         cv2.imwrite(
-            "./depth/%s.png" % noExtName, 255 - (pred_save - min) / (max - min) * 255
+            "./depth/%s.png" % noExtName, 255 - (pred_save - Min) / (Max - Min) * 255
         )
