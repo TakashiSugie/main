@@ -48,15 +48,24 @@ def longerResize(img, longerSideLen=640):
         img = cv2.resize(img, (int(img.shape[1] * fraq), int(img.shape[0] * fraq)))
     return img
 
+
 def disp2depth(dispImg):
-    depthImg=np.zeros([dispImg.shape])
-    # for x in range(dispImg.shape[0]):
-    #     for y in raneg(dispImg.shape[1]):
-    #        depthImg[x][y] = float(beta * f_mm) / float((dispImg1[x][y] * f_mm * s_mm + beta))
-    depthImg=float(beta * f_mm) / float((dispImg1 * f_mm * s_mm + beta))
-    else:
-        print("zero!!")
-        Z = 0
+    depthImg = np.zeros(dispImg.shape)
+    # print(paraDict)
+
+    f_mm = paraDict["focal_length_mm"]
+    s_mm = paraDict["sensor_size_mm"]
+    b_mm = paraDict["baseline_mm"]
+    longerSide = max(dispImg1.shape[0], dispImg1.shape[1])
+    beta = b_mm * f_mm * longerSide
+    # f_pix = (f_mm * longerSide) / s_mm
+    for x in range(dispImg.shape[1]):
+        for y in range(dispImg.shape[0]):
+            depthImg[x][y] = float(beta * f_mm) / float(
+                (-dispImg1[x][y] * f_mm * s_mm + beta)
+            )
+    return depthImg
+
 
 u1, v1 = 0, 0
 # u2, v2 = 8, 8  # 0~8(uが→方向　vが下方向)
@@ -66,7 +75,7 @@ camNum2 = u2 * 9 + v2
 cgPath = True
 setFPAuto = True
 useManualFP = False
-require_midas = False
+require_midas = True
 # longerSideLen = 160
 # longerSideLen = 1008
 longerSideLen = 640
@@ -119,29 +128,57 @@ if require_midas:
     if os.path.isfile("./depth/" + imgName1 + ".npy") and os.path.isfile(
         "./depth/" + imgName2 + ".npy"
     ):
-        dispImg1 = np.load("./depth/" + imgName1 + ".npy")
-        dispImg2 = np.load("./depth/" + imgName2 + ".npy")
+        depth1 = np.load("./depth/" + imgName1 + ".npy")
+        depth2 = np.load("./depth/" + imgName2 + ".npy")
+
     elif os.path.isfile("./depth/" + imgName1 + ".png") and os.path.isfile(
         "./depth/" + imgName2 + ".png"
     ):
-        dispImg1 = cv2.imread("./depth/" + imgName1 + ".png", 0)
-        dispImg2 = cv2.imread("./depth/" + imgName2 + ".png", 0)
+        depth1 = cv2.imread("./depth/" + imgName1 + ".png", 0)
+        depth2 = cv2.imread("./depth/" + imgName2 + ".png", 0)
         # print("\n\nimg:", dispImg1)
+    # if os.path.isfile("./depth/" + imgName1 + ".npy") and os.path.isfile(
+    #     "./depth/" + imgName2 + ".npy"
+    # ):
+    #     dispImg1 = np.load("./depth/" + imgName1 + ".npy")
+    #     dispImg2 = np.load("./depth/" + imgName2 + ".npy")
+
+    # elif os.path.isfile("./depth/" + imgName1 + ".png") and os.path.isfile(
+    #     "./depth/" + imgName2 + ".png"
+    # ):
+    #     dispImg1 = cv2.imread("./depth/" + imgName1 + ".png", 0)
+    #     dispImg2 = cv2.imread("./depth/" + imgName2 + ".png", 0)
+    #     # print("\n\nimg:", dispImg1)
+
+    if "depth1" in locals():
+        Min, Max = np.min(depth1), np.max(depth1)
+        depthImg1 = (depth1 - Min) / (Max - Min) * 0.4 + 99.7
+        # dispImg1 = (dispImg1 - Min) / (Max - Min) * 0.4 + 99.7
+        Min, Max = np.min(depth2), np.max(depth2)
+        depthImg2 = (depth2 - Min) / (Max - Min) * 0.4 + 99.7
+        # dispImg2 = (dispImg2 - Min) / (Max - Min) * 0.4 + 99.7
+        # print(dispImg1)
+        print("dispMax:", np.max(depthImg1), "dispMin:", np.min(depthImg1))
+        Max, Min = np.max(depthImg1), np.min(depthImg1)
+        cv2.imwrite("ESTantinous.png", (depthImg1 - Min) / (Max - Min) * 255)
 
 
 else:
     dispImg1 = matLoad(u1, v1)
     dispImg2 = matLoad(u2, v2)
-    Max, Min = np.max(dispImg1), np.min(dispImg1)
-    # cv2.imwrite("antinous.png", (dispImg1 - Min) / (Max - Min) * 255)
+    depthImg1 = disp2depth(dispImg1)
+    depthImg2 = disp2depth(dispImg2)
 
-if "dispImg1" in locals():
-    Min, Max = np.min(dispImg1), np.max(dispImg1)
-    dispImg1 = (dispImg1 - Min) / (Max - Min) * 10 + 90
-    Min, Max = np.min(dispImg2), np.max(dispImg2)
-    dispImg2 = (dispImg2 - Min) / (Max - Min) * 10 + 90
-    # print(dispImg1)
+    Max, Min = np.max(dispImg1), np.min(dispImg1)  #
     print("dispMax:", np.max(dispImg1), "dispMin:", np.min(dispImg1))
+
+    Max, Min = np.max(depthImg1), np.min(depthImg1)  #
+    print("dispMax:", np.max(depthImg1), "dispMin:", np.min(depthImg1))
+    del dispImg1
+    del dispImg2
+
+    cv2.imwrite("GTantinous.png", (depthImg1 - Min) / (Max - Min) * 255)
+
 # ここをMidasOnlyから出てきたNpyに書き換える
 # Depthとかは正直おかしいかもしれないが、そこに関してはスルー
 # Depthか視差かも正直怪しい、disp→Depth変換をつけたりなしにする必要があるかも

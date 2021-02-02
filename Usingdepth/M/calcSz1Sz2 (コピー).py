@@ -22,80 +22,57 @@ def calcNorm(R):
 def calcSz1Sz2(M):
     MAEMin = 100
     count = 0
-    # SR = M[:, 0:3].T  # こっちのほうがなんかあってるぽい、多分SZ<1だから
-    SR = M[:, 0:3]
+    SR = M[:, 0:3].T  # こっちのほうがなんかあってるぽい、なんでかな・・・
+    # SR = M[:, 0:3].T  # ここどうなってるのかまた検証　逆行列っぽい
     # T = M[:, 3]
     sz1 = 1
     sz2 = 1
     norm0, norm1 = calcNorm(SR)
+    # print(norm0)
+    # print(norm1)
+
     while True:
-        sz1Matrix = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1.0 / sz1]])
-        sz2Matrix = np.array([[1, 0, 0], [0, 1, 0], [0, 0, sz2]])
-        R1 = np.dot(sz2Matrix, SR)
-        R12 = np.dot(R1, sz1Matrix)
+        szInv1 = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1.0 / sz1]])
+        szInv2 = np.array([[1, 0, 0], [0, 1, 0], [0, 0, sz2]])
+        R1 = np.dot(szInv1, SR)
+        R12 = np.dot(R1, szInv2)
         norm0, norm1 = calcNorm(R12)
         MAE = np.array([[1, 1, 1], [1, 1, 1]]) - np.array([norm0, norm1])
         loss = np.linalg.norm(MAE, 1)
+        count += 1
+        sz1 += 1
+        sz2 += 1
         if MAEMin > loss:
             MAEMin = loss
         elif MAEMin <= loss:
             print("this loss is minimum")
             break
-        count += 1
-        sz1 += 1
-        sz2 += 1
-
-    # szInv1 = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1.0 / sz1]])
-    # szInv2 = np.array([[1, 0, 0], [0, 1, 0], [0, 0, sz2]])
-    # print(sz1, sz2)
-    # R1 = np.dot(szInv1, R12)
-    # SR = np.dot(R1, szInv2)
     # print(M)
-    # print(SR)
-
+    # print(sz1, sz2)
     # print(norm0)
     # print(norm1)
 
+    # SR = M[:, 0:3].T
+    # print(R12)
+
+    # print(R12)
+    szInv1 = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1.0 / sz1]])
+    szInv2 = np.array([[1, 0, 0], [0, 1, 0], [0, 0, sz2]])
+    R1 = np.dot(szInv2, R12)
+    R12 = np.dot(R1, szInv1)
+    # print(R12)
     return sz1, sz2, R12
 
 
 def calcT12(M):
     t = M[:, 3]
-    t[2] = t[2] * sz1
+    # t[2] = t[2] * sz1
     return t
-
-
-def calcM(sz1, sz2, R, T):
-    # R = R.T  #####
-    # print(R, T)
-    # szInv1 = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1.0 / sz1]])
-    # szInv2 = np.array([[1, 0, 0], [0, 1, 0], [0, 0, sz2]])
-    # R1 = np.dot(szInv1, R)
-    # SR = np.dot(R1, szInv2)
-    # # print(M)
-    # print(SR)
-    # splitRate = 1.0
-    # MiddleT = np.reshape(MiddleT, [3, 1])
-    # MiddleRT = np.concatenate([MiddleR, MiddleT], axis=1)
-    # lower = np.reshape(np.array([0, 0, 0, 1]), [1, 4])
-    # MiddleRT = np.concatenate([MiddleRT, lower], axis=0)
-    # sz1Matrix = np.array(
-    #     [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1.0 / MiddleSz1, 0], [0, 0, 0, 1]]
-    # )
-    # sz2Matrix = np.array(
-    #     [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, MiddleSz2, 0], [0, 0, 0, 1]]
-    # )
-    # R1 = np.dot(sz1Matrix, MiddleRT)
-    # MiddleM = np.dot(R1, sz2Matrix)
-    # MiddleM = MiddleM[:3, :]
-    # print(MiddleM)
-
-    return MiddleM
 
 
 def calcMiddleM(sz1, sz2, R, T):
     # R = R.T  #####
-    splitRate = 2.0
+    splitRate = 1.0
     MiddleR = R
     for i in range(3):
         for j in range(3):
@@ -103,21 +80,18 @@ def calcMiddleM(sz1, sz2, R, T):
                 MiddleR[i][j] = R[i][j]
             else:
                 MiddleR[i][j] = R[i][j] / splitRate
-    # MiddleSz1, MiddleSz2 = sz1 / splitRate, sz2 / splitRate
-    MiddleSz1, MiddleSz2 = sz1, sz2
+    MiddleSz1, MiddleSz2 = sz1 / splitRate, sz2 / splitRate
     MiddleT = T / splitRate
     MiddleT = np.reshape(MiddleT, [3, 1])
     MiddleRT = np.concatenate([MiddleR, MiddleT], axis=1)
     lower = np.reshape(np.array([0, 0, 0, 1]), [1, 4])
     MiddleRT = np.concatenate([MiddleRT, lower], axis=0)
-    sz1Matrix = np.array(
-        [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1.0 / MiddleSz1, 0], [0, 0, 0, 1]]
+    szInv1 = np.array([[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, MiddleSz1, 0], [0, 0, 0, 1]])
+    szInv2 = np.array(
+        [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1.0 / MiddleSz2, 0], [0, 0, 0, 1]]
     )
-    sz2Matrix = np.array(
-        [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, MiddleSz2, 0], [0, 0, 0, 1]]
-    )
-    R1 = np.dot(sz1Matrix, MiddleRT)
-    MiddleM = np.dot(R1, sz2Matrix)
+    R1 = np.dot(szInv1, MiddleRT)
+    MiddleM = np.dot(R1, szInv2)
     MiddleM = MiddleM[:3, :]
     # print(MiddleM)
 
@@ -126,16 +100,11 @@ def calcMiddleM(sz1, sz2, R, T):
 
 if __name__ == "__main__":
     # M = np.load("chairDeskSave.npy")
-    M = np.load("antinous_0_1.npy")
-    print(M)
+    M = np.load("antinous_GT.npy")
     # M = np.load("meetingRoomSave.npy")
     sz1, sz2, R12 = calcSz1Sz2(M)
-    print(R12)
     t12 = calcT12(M)
     MiddleM = calcMiddleM(sz1, sz2, R12, t12)
-    # calcM(sz1, sz2, R12, t12)
-    M = np.load("antinous_0_1.npy")
-
-    # print(M)
-    print(MiddleM - M)
+    print(M)
+    print(MiddleM)
     np.save("middleM", MiddleM)
