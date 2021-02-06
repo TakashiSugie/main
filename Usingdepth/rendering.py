@@ -43,7 +43,7 @@ print(mesh_fi)
 
 
 def capture():
-    if not os.path.isdir("./capture/%s" % plyName):
+    if not os.path.isdir("./capture/%１s" % plyName):
         os.makedirs("./capture/%s" % plyName)
     width = glutGet(GLUT_WINDOW_WIDTH)
     height = glutGet(GLUT_WINDOW_HEIGHT)

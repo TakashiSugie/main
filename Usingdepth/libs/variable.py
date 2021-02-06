@@ -56,26 +56,29 @@ def disp2depth(dispImg):
     f_mm = paraDict["focal_length_mm"]
     s_mm = paraDict["sensor_size_mm"]
     b_mm = paraDict["baseline_mm"]
-    longerSide = max(dispImg1.shape[0], dispImg1.shape[1])
+    longerSide = max(dispImg.shape[0], dispImg.shape[1])
     beta = b_mm * f_mm * longerSide
     # f_pix = (f_mm * longerSide) / s_mm
     for x in range(dispImg.shape[1]):
         for y in range(dispImg.shape[0]):
             depthImg[x][y] = float(beta * f_mm) / float(
-                (-dispImg1[x][y] * f_mm * s_mm + beta)
+                (-dispImg[x][y] * f_mm * s_mm + beta)
             )
     return depthImg
+    Min, Max = np.min(dispImg), np.max(dispImg)
+    dispImg = (dispImg - Min) / (Max - Min) * 0.4 + 99.7
+    return dispImg
 
 
 u1, v1 = 0, 0
-# u2, v2 = 8, 8  # 0~8(uが→方向　vが下方向)
-u2, v2 = 0, 1  # 0~8(uが→方向　vが下方向)
+u2, v2 = 8, 8  # 0~8(uが→方向　vが下方向)
+# u2, v2 = 0, 1  # 0~8(uが→方向　vが下方向)
 camNum1 = u1 * 9 + v1
 camNum2 = u2 * 9 + v2
 cgPath = True
 setFPAuto = True
 useManualFP = False
-require_midas = True
+require_midas = False
 # longerSideLen = 160
 # longerSideLen = 1008
 longerSideLen = 640
@@ -173,11 +176,12 @@ else:
     print("dispMax:", np.max(dispImg1), "dispMin:", np.min(dispImg1))
 
     Max, Min = np.max(depthImg1), np.min(depthImg1)  #
-    print("dispMax:", np.max(depthImg1), "dispMin:", np.min(depthImg1))
+    print("depthMax:", np.max(depthImg1), "depthMin:", np.min(depthImg1))
+    # diff=dispImg1-dispImg2
+    
     del dispImg1
     del dispImg2
-
-    cv2.imwrite("GTantinous.png", (depthImg1 - Min) / (Max - Min) * 255)
+    # cv2.imwrite("GTantinous.png", (depthImg1 - Min) / (Max - Min) * 255)
 
 # ここをMidasOnlyから出てきたNpyに書き換える
 # Depthとかは正直おかしいかもしれないが、そこに関してはスルー

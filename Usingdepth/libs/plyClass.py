@@ -160,8 +160,10 @@ class Ply:
 
     def PlyFromImg(self, img, imgIdx):
         v_list = []
+        # print("@@@@@@@",img.shape)
         for y in range(img.shape[1]):
             for x in range(img.shape[0]):
+                # print(x,y)
                 X, Y, Z = pix2m_disp(x, y, imgIdx)
                 v_list.append(
                     " ".join(
