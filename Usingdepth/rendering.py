@@ -37,16 +37,20 @@ elif renderingMode == 3:
     plyName = saveName
 elif renderingMode == 4:
     plyName = saveName + "_integrated"
+elif renderingMode==5:
+    plyName=saveName+"_middle"
 mesh_fi = "./mesh/" + plyName + ".ply"
 print(renderingPly[renderingMode])
 print(mesh_fi)
 
 
 def capture():
-    if not os.path.isdir("./capture/%１s" % plyName):
+    if not os.path.isdir("./capture/%s" % plyName):
         os.makedirs("./capture/%s" % plyName)
     width = glutGet(GLUT_WINDOW_WIDTH)
     height = glutGet(GLUT_WINDOW_HEIGHT)
+    if height%1024:
+        height+=1
     # キャプチャ
     print(height)
     glReadBuffer(GL_FRONT)
@@ -83,7 +87,7 @@ def motion(x, y):
     if LeftButtonOn == True and RightButtonOn == True:
         Angle1 = 0
         Angle2 = 0
-        Distance = 1.0
+        Distance = 7.0
         gluLookAt(0, 0, 7.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
 
     elif LeftButtonOn == True:

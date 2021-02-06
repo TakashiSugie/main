@@ -7,7 +7,8 @@ import numpy as np
 # import glob
 from libs.variable import imgName1, imgName2, saveName
 from sklearn import preprocessing
-
+import statistics
+import math
 
 error = 0
 count = 0
@@ -76,6 +77,34 @@ def LR(X, Y):
         count += 1
     return a
 
+def calcSzMedian(point1List,point2List):
+    Z1List,Z2List,SzList=[],[],[]
+    zeroCount=0
+    for idx in range(len(point1List)):
+        Z1List.append(point1List[idx][2])
+        Z2List.append(point2List[idx][2])
+    for num1 in range(len(Z1List)):
+        for num2 in range(len(Z1List)):
+            if num1<num2:
+                diff1=Z1List[num1]-Z1List[num2]
+                diff2 =Z2List[num1]-Z2List[num2]
+                if diff2==0:
+                    # print("0000000")
+                    zeroCount+=1
+                else:
+                    SzList.append(float(diff1)/float(diff2))
+    print("zeroNum",zeroCount)
+
+    medianSz=statistics.median(SzList)
+    print("medianSz",medianSz)
+    meanSz=statistics.mean(SzList)
+    print("meanSz",meanSz)
+    
+    # print(Z1List,Z2List)
+    # print(np.array(point2List).shape)
+    # print(point2List)
+    pass
+
 
 def createData():
     M = []
@@ -88,6 +117,8 @@ def createData():
         X_train.append(value1)  # (x1,y1,z1)
         y_train.append(value2)  # (x1',y1',z1')
     # [[x1'],[y1'],[z1']]なんでかというとx1'=f(x1,y1,z1にしたかったから)
+    calcSzMedian(X_train,y_train)
+
     y_train = list(np.array(y_train).T)
 
     for i in range(3):

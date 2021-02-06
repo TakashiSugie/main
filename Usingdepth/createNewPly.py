@@ -16,7 +16,7 @@ def main():
     save_fi = "./mesh/" + saveName + "_integrated.ply"
     middleName = "middleM"
     npyPath = "./M/" + saveName + ".npy"
-    # npyPath = "./M/" + middleName + ".npy"
+    npyPath = "./M/" + middleName + ".npy"
     mesh1 = Ply(mesh1_fi)
     mesh2 = Ply(mesh2_fi)
     # mesh1.changeColor(r=0, g=0, b=255, sigma=1.0)
@@ -30,9 +30,5 @@ def main():
     mesh1_2.integrate([mesh2.v_infos, mesh2.num_vertex])
     mesh1_2.ClassWritePly(save_fi)
 
-    for key in mesh2.__dict__.keys():
-        # print(key)
-        pass
-
-
 main()
+# threeIntegrate()

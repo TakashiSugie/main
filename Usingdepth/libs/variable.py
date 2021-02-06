@@ -87,6 +87,7 @@ renderingPly = {
     2: "mesh2",
     3: "mesh2_1",
     4: "mesh1+mesh2_1",
+    5: "middle"
 }
 renderingMode = 1
 content = "additional"
@@ -95,7 +96,8 @@ content = "additional"
 
 if content == "ori":
     basePath = "/home/takashi/Desktop/dataset/image"
-    LFName = "chairDesk23"
+    # LFName = "chairDesk23"
+    LFName = "meetingRoom"
     dirPath = os.path.join(basePath, LFName)
     imgPathList = glob.glob(dirPath + "/*")
     imgName1 = os.path.splitext(os.path.basename(imgPathList[0]))[0]
@@ -161,9 +163,9 @@ if require_midas:
         depthImg2 = (depth2 - Min) / (Max - Min) * 0.4 + 99.7
         # dispImg2 = (dispImg2 - Min) / (Max - Min) * 0.4 + 99.7
         # print(dispImg1)
-        print("dispMax:", np.max(depthImg1), "dispMin:", np.min(depthImg1))
-        Max, Min = np.max(depthImg1), np.min(depthImg1)
-        cv2.imwrite("ESTantinous.png", (depthImg1 - Min) / (Max - Min) * 255)
+        # print("dispMax:", np.max(depthImg1), "dispMin:", np.min(depthImg1))
+        # Max, Min = np.max(depthImg1), np.min(depthImg1)
+        # cv2.imwrite("ESTantinous.png", (depthImg1 - Min) / (Max - Min) * 255)
 
 
 else:

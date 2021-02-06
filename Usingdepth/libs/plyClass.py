@@ -128,11 +128,18 @@ class Ply:
 
     def np2infos(self):  # これをしなきゃいけない
         infoList = []
-        ones = np.ones((self.verts_np.T.shape[0], 1))
+        if not self.colors_np.shape[1]==self.verts_np.shape[1]:
+            if self.verts_np.shape[0]==3:
+                self.verts_np=self.verts_np.T
+            if self.colors_np.shape[0]==3 or self.colors_np.shape[0]==4:
+                self.colors_np=self.colors_np.T
+        ones = np.ones((self.verts_np.shape[0], 1))
         if self.colors_np.shape[1] == 3:
-            infos = np.concatenate((self.verts_np.T, self.colors_np, ones), axis=1)
+            print((self.verts_np.shape, self.colors_np.shape, ones.shape))
+            infos = np.concatenate((self.verts_np, self.colors_np, ones), axis=1)
+            # infos = np.concatenate((self.verts_np.T, self.colors_np, ones), axis=1)
         elif self.colors_np.shape[1] == 4:
-            infos = np.concatenate((self.verts_np.T, self.colors_np), axis=1)
+            infos = np.concatenate((self.verts_np, self.colors_np), axis=1)
 
         for idx in range(infos.shape[0]):
             infoList.append(" ".join(list(map(str, infos[idx]))) + "\n")
@@ -145,7 +152,7 @@ class Ply:
             M = M[:3, :]
             print(M)
             # print(M.shape)
-        # print()
+        print("dot")
         ones = np.ones((len(self.verts_np), 1))
         oldV = np.concatenate((self.verts_np, ones), axis=1)
         NewV = np.dot(M, oldV.T)
@@ -193,6 +200,10 @@ class Ply:
         else:
             colors = np.tile(np.array([r, g, b]), (self.colors_np.shape[0], 1))
             self.colors_np = colors
+            print(self.colors_np.shape)
+
+            self.np2infos() 
+            print("color change")
 
     # 小数点以下をどれくらい丸めるか
     def changeRound(self, roundV=4, roundC=0):
