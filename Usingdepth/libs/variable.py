@@ -179,6 +179,7 @@ else:
 
     Max, Min = np.max(depthImg1), np.min(depthImg1)  #
     print("depthMax:", np.max(depthImg1), "depthMin:", np.min(depthImg1))
+    print("depthMax:", np.max(depthImg2), "depthMin:", np.min(depthImg2))
     # diff=dispImg1-dispImg2
     
     del dispImg1

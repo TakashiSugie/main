@@ -1,5 +1,5 @@
 import numpy as np
-from libsLink.variable import saveName
+from libs.variable import saveName
 
 # 用いるのは3Dの特徴点マッチングを用いた変換行列M(3*4)
 # この変換行列はカメラ１からカメラ２への変換
@@ -8,6 +8,7 @@ from libsLink.variable import saveName
 # 求める際の仮定 S=1,Sz1=Sz2
 # Rが直積行列に近くなるようなSz1とSz2を推定、Mからsz成分を抜いてRとTを取り出す
 # 求めたパラメータを用いて中間になるような変換行列を導出
+#
 
 
 def calcNorm(R):
@@ -62,9 +63,7 @@ def calcSz1Sz2(M):
 def calcT12(M):
     t = M[:, 3]
     print(sz1)
-    # t[2] = t[2]*sz1*((3.48817945e-02)/(8.54605149e-02))**2
-    # t[2] = t[2]*sz1*(-8.54605149e-02)/(3.48817945e-02)
-    t[2] = t[2] /sz1
+    t[2] = t[2] * sz1
     return t
 
 
@@ -79,7 +78,6 @@ def calcMiddleM(sz1, sz2, R, T):
             else:
                 MiddleR[i][j] = R[i][j] / splitRate
     # MiddleSz1, MiddleSz2 = sz1 / splitRate, sz2 / splitRate
-    # print(MiddleSz1,MiddleSz2)
     MiddleSz1, MiddleSz2 = sz1, sz2
     MiddleT = T / splitRate
     MiddleT = np.reshape(MiddleT, [3, 1])
@@ -95,12 +93,6 @@ def calcMiddleM(sz1, sz2, R, T):
     R1 = np.dot(sz1Matrix, MiddleRT)
     MiddleM = np.dot(R1, sz2Matrix)
     MiddleMInv=np.linalg.inv(MiddleM)
-
-
-    MiddleSquare=np.dot(MiddleM,MiddleM)
-    print("Square:\n",MiddleSquare)
-    print("dfsa")
-
     MiddleM = MiddleM[:3, :]
     MiddleMInv = MiddleMInv[:3, :]
     # print(MiddleM)
@@ -114,14 +106,13 @@ if __name__ == "__main__":#結局このままだと回転行列は用いるこ�
     M = np.load("./M/%s.npy"%saveName)
     # M = np.load("antinous_0_1.npy")
     # M = np.load("meetingRoom_0_80.npy")
-    print("M:\n",M)
+    print(M)
     # M = np.load("meetingRoomSave.npy")
     sz1, sz2, R12 = calcSz1Sz2(M)
-    # sz1,sz2=200,200
-    # print("R\n",R12)
+    print("R\n",R12)
     t12 = calcT12(M)
     print(t12)
-    MiddleM,MiddleMInv= calcMiddleM(sz1, sz2, R12, t12)
+    MiddleM,MiddleMInv = calcMiddleM(sz1, sz2, R12, t12)
     print("Inv\n: ",MiddleMInv)
     print("Middle\n: ",MiddleM)
     # calcM(sz1, sz2, R12, t12)
@@ -129,5 +120,5 @@ if __name__ == "__main__":#結局このままだと回転行列は用いるこ�
 
     # print(M)
     np.save("./M/%s_middleM"%saveName, MiddleM)
-    np.save("./M/%s_middleMInv"%saveName, MiddleMInv)
+    np.save("./M/%smiddleMInv"%saveName, MiddleMInv)
 
