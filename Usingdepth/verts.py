@@ -71,7 +71,7 @@ def setVerts(mesh_fi):
     mesh = Ply(mesh_fi=mesh_fi)
     # print(mesh.verts_np[0:5])
     mesh.setInfos()
-    mesh.changeAlpha(alpha=255)
+    # mesh.changeAlpha(alpha=255)
     verts_np = mesh.verts_np
     colors_np = mesh.colors_np
     # verts_np = cvtXY(verts_np)

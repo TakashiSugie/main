@@ -64,13 +64,12 @@ def calcT12(M):
     print(sz1)
     # t[2] = t[2]*sz1*((3.48817945e-02)/(8.54605149e-02))**2
     # t[2] = t[2]*sz1*(-8.54605149e-02)/(3.48817945e-02)
-    t[2] = t[2] /sz1
+    # t[2] = t[2] /sz1
     return t
 
 
-def calcMiddleM(sz1, sz2, R, T):
-    # R = R.T  #####
-    splitRate = 2.0
+def calcMiddlePara(sz1, sz2, R, T, splitRate=2.0):
+    splitRate = 1.0
     MiddleR = R
     for i in range(3):
         for j in range(3):
@@ -80,54 +79,61 @@ def calcMiddleM(sz1, sz2, R, T):
                 MiddleR[i][j] = R[i][j] / splitRate
     # MiddleSz1, MiddleSz2 = sz1 / splitRate, sz2 / splitRate
     # print(MiddleSz1,MiddleSz2)
+    manualNum = 1.0
+    sz1, sz2 = sz1 * manualNum, sz2 * manualNum
     MiddleSz1, MiddleSz2 = sz1, sz2
+    T[2] = T[2] * MiddleSz1  # ここをなんとか工夫してM=Middle*Middleにしたい
+
     MiddleT = T / splitRate
-    MiddleT = np.reshape(MiddleT, [3, 1])
-    MiddleRT = np.concatenate([MiddleR, MiddleT], axis=1)
+
+    return MiddleSz1, MiddleSz2, MiddleR, MiddleT
+
+
+def calcMFromPara(sz1, sz2, R, T):
+    T = np.reshape(T, [3, 1])
+
+    RT = np.concatenate([R, T], axis=1)
     lower = np.reshape(np.array([0, 0, 0, 1]), [1, 4])
-    MiddleRT = np.concatenate([MiddleRT, lower], axis=0)
+    RT = np.concatenate([RT, lower], axis=0)
     sz1Matrix = np.array(
-        [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1.0 / MiddleSz1, 0], [0, 0, 0, 1]]
+        [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1.0 / sz1, 0], [0, 0, 0, 1]]
     )
-    sz2Matrix = np.array(
-        [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, MiddleSz2, 0], [0, 0, 0, 1]]
-    )
-    R1 = np.dot(sz1Matrix, MiddleRT)
-    MiddleM = np.dot(R1, sz2Matrix)
-    MiddleMInv=np.linalg.inv(MiddleM)
+    sz2Matrix = np.array([[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, sz2, 0], [0, 0, 0, 1]])
+    R1 = np.dot(sz1Matrix, RT)
+    calcM = np.dot(R1, sz2Matrix)
+    InvCalcM = np.linalg.inv(calcM)
+
+    calcMSquare = np.dot(calcM, calcM)
+    print("Square:\n", calcMSquare)
+    print("calc:\n", calcM)
+
+    calcM = calcM[:3, :]
+    InvCalcM = InvCalcM[:3, :]
+    return calcM, InvCalcM
 
 
-    MiddleSquare=np.dot(MiddleM,MiddleM)
-    print("Square:\n",MiddleSquare)
-    print("dfsa")
-
-    MiddleM = MiddleM[:3, :]
-    MiddleMInv = MiddleMInv[:3, :]
-    # print(MiddleM)
-
-
-    return MiddleM,MiddleMInv
-# def calc
-
-if __name__ == "__main__":#結局このままだと回転行列は用いることが出来なさそうかな
-    #どれかを見たときにRっぽさを感じたからそれを探したい
-    M = np.load("./M/%s.npy"%saveName)
+if __name__ == "__main__":  # 結局このままだと回転行列は用いることが出来なさそうかな
+    # どれかを見たときにRっぽさを感じたからそれを探したい
+    M = np.load("./M/%s.npy" % saveName)
     # M = np.load("antinous_0_1.npy")
     # M = np.load("meetingRoom_0_80.npy")
-    print("M:\n",M)
+    print("M:\n", M)
     # M = np.load("meetingRoomSave.npy")
     sz1, sz2, R12 = calcSz1Sz2(M)
     # sz1,sz2=200,200
     # print("R\n",R12)
     t12 = calcT12(M)
-    print(t12)
-    MiddleM,MiddleMInv= calcMiddleM(sz1, sz2, R12, t12)
-    print("Inv\n: ",MiddleMInv)
-    print("Middle\n: ",MiddleM)
+    # print(t12)
+    MiddleSz1, MiddleSz2, MiddleR, MiddleT = calcMiddlePara(
+        sz1=sz1, sz2=sz2, R=R12, T=t12
+    )
+    MiddleM, MiddleMInv = calcMFromPara(MiddleSz1, MiddleSz2, MiddleR, MiddleT)
+    print("Inv\n: ", MiddleMInv)
+    print("Middle\n: ", MiddleM)
     # calcM(sz1, sz2, R12, t12)
     # M = np.load("antinous_0_1.npy")
 
     # print(M)
-    np.save("./M/%s_middleM"%saveName, MiddleM)
-    np.save("./M/%s_middleMInv"%saveName, MiddleMInv)
+    np.save("./M/%s_middleM" % saveName, MiddleM)
+    np.save("./M/%s_middleMInv" % saveName, MiddleMInv)
 

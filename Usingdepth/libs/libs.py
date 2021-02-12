@@ -12,6 +12,8 @@ longerSide = max(depthImg1.shape[0], depthImg1.shape[1])
 beta = b_mm * f_mm * longerSide
 f_pix = (f_mm * longerSide) / s_mm
 
+print("f_pix", f_pix)
+
 
 def pix2m_disp(x, y, imgIdx):
     # print(dispImg1.shape)
@@ -24,5 +26,6 @@ def pix2m_disp(x, y, imgIdx):
     X = (float(x) - float(depthImg1.shape[1] / 2.0)) * Z / f_pix
     Y = (float(y) - float(depthImg1.shape[0] / 2.0)) * Z / f_pix
 
+    # return X, Y, Z * (1.0 / 1720)  # 単位はmm
     return X, Y, Z  # 単位はmm
 

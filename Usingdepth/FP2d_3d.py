@@ -33,6 +33,7 @@ if __name__ == "__main__":
         FP_2d_1 = readCVMatching("./FP_2d/FP_" + imgName1 + ".npy")
     else:
         FP_2d_1 = readCVMatching("./FPManual/npy/" + imgName1 + "_FP.npy")
+    # print(FP2d_1)
     FP_3d_1 = FP2d_3d(1, FP_2d_1)
     np.save("./FP_3d/" + imgName1, FP_3d_1)
 
