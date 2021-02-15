@@ -3,8 +3,8 @@ import numpy as np
 import copy as cp
 
 # parameters（ground truth)
-S_Z1 = 1.0  # カメラ1のzスケール
-S_Z2 = 1.0  # カメラ2のzスケール
+S_Z1 = 10.0  # カメラ1のzスケール
+S_Z2 = 10.0  # カメラ2のzスケール
 R_X1 = 0.1  # カメラ1のx回転
 R_Y1 = 0.1  # カメラ1のy回転
 R_Z1 = 0.1  # カメラ1のz回転
@@ -18,7 +18,7 @@ C_X = 0.5  # 光学中心
 C_Y = 0.5  # 光学中心
 
 # number of points (点の数)
-NUM_PT = 16
+NUM_PT = 128
 
 # step size (最急降下法のステップサイズ)
 STEP_SIZE = 0.001
@@ -56,7 +56,19 @@ def c2i(p_c, s):
     return p_i
 
 
-def calcParameter():
+if __name__ == "__main__":
+
+    # generate points in world coordinate system
+    p_w_org = np.random.randn(NUM_PT, 3)
+
+    # generate points in camera cordinate systems 1 and 2
+    p_c1_org = w2c(p_w_org, R_X1, R_Y1, R_Z1, T_X1, T_Y1, T_Z1)
+    p_c2_org = cp.deepcopy(p_w_org)
+
+    # generate depth image (u, v, \zeta)
+    p_i1_org = c2i(p_c1_org, S_Z1)
+    p_i2_org = c2i(p_c2_org, S_Z2)
+
     # R と t の初期値
     r_x1_est = 0.0
     r_y1_est = 0.0
@@ -125,49 +137,4 @@ def calcParameter():
         t_z1_est -= STEP_SIZE / F * t_z1_grad
 
         # print(r_z1_est)
-        # print(t_z1_est)
-    return [r_x1_est, r_y1_est, r_z1_est, t_x1_est, t_y1_est, t_z1_est]
-
-
-def makeM(paraList):
-    M = np.zeros((3, 4))
-    rx, ry, rz, tx, ty, tz = paraList
-    M = np.array([[1, -rz, ry, tx], [rz, 1, -rx, ty], [-ry, rx, 1, tz]])
-    np.save("GradM", M)
-    return M
-
-
-def initParam():
-    global F, C_X, C_Y
-    F = 1462.857142857143
-    C_X = 256
-    C_Y = 256
-
-
-if __name__ == "__main__":
-
-    # generate points in world coordinate system
-    # p_w_org = np.random.randn(NUM_PT, 3)
-
-    # # generate points in camera cordinate systems 1 and 2
-    # p_c1_org = w2c(p_w_org, R_X1, R_Y1, R_Z1, T_X1, T_Y1, T_Z1)
-    # p_c2_org = cp.deepcopy(p_w_org)
-
-    # print(p_c1_org.shape)
-    # print(p_c2_org.shape)
-
-    p_c1_org = np.load("input_Cam000.npy")
-    p_c2_org = np.load("input_Cam080.npy")
-    NUM_PT = p_c1_org.shape[0]
-    print(p_c1_org.shape)
-    print(p_c2_org.shape)
-
-    # generate depth image (u, v, \zeta)
-    p_i1_org = c2i(p_c1_org, S_Z1)
-    p_i2_org = c2i(p_c2_org, S_Z2)
-    paraList = calcParameter()
-
-    rx, ry, rz, tx, ty, tz = paraList
-    print(rx, ry, rz, tx, ty, tz)
-    M = makeM(paraList)
-    print(M)
+        print(t_z1_est)

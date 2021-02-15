@@ -9,7 +9,12 @@ import glob
 
 
 def readCg(cgPath):
-    patternList = ["focal_length_mm", "sensor_size_mm", "baseline_mm"]
+    patternList = [
+        "focal_length_mm",
+        "sensor_size_mm",
+        "baseline_mm",
+        "focus_distance_m",
+    ]
     paraDict = {}
     if cgPath:
         with open(cgPath) as f:
@@ -25,6 +30,7 @@ def readCg(cgPath):
             "focal_length_mm": 100.0,
             "sensor_size_mm": 35.0,
             "baseline_mm": 90.0,
+            "focus_distance_m": 7.0,
         }
     return paraDict
 
@@ -56,17 +62,18 @@ def disp2depth(dispImg):
     f_mm = paraDict["focal_length_mm"]
     s_mm = paraDict["sensor_size_mm"]
     b_mm = paraDict["baseline_mm"]
+    fd_mm = paraDict["focus_distance_m"] * 1000.0
     longerSide = max(dispImg.shape[0], dispImg.shape[1])
     beta = b_mm * f_mm * longerSide
     # f_pix = (f_mm * longerSide) / s_mm
     for x in range(dispImg.shape[1]):
         for y in range(dispImg.shape[0]):
-            depthImg[x][y] = float(beta * f_mm) / float(
-                (-dispImg[x][y] * f_mm * s_mm + beta)
+            depthImg[x][y] = float(beta * fd_mm) / float(
+                (-dispImg[x][y] * fd_mm * s_mm + beta)
             )
-    return depthImg
+    # return depthImg
     Min, Max = np.min(dispImg), np.max(dispImg)
-    dispImg = (dispImg - Min) / (Max - Min) * 0.4 + 99.7
+    dispImg = (dispImg - Min) / (Max - Min) * 1940 + 6093
     return dispImg
 
 
@@ -84,14 +91,15 @@ require_midas = False
 longerSideLen = 640
 renderingPly = {1: "mesh1", 2: "mesh2", 3: "mesh2_1", 4: "mesh1+mesh2_1", 5: "middle"}
 renderingMode = 1
+splitRate = 1.0
 content = "additional"
 # content = "lf"
 # content = "ori"
 
 if content == "ori":
     basePath = "/home/takashi/Desktop/dataset/image"
-    # LFName = "chairDesk23"
-    LFName = "meetingRoom"
+    LFName = "chairDesk23"
+    # LFName = "meetingRoom"
     dirPath = os.path.join(basePath, LFName)
     imgPathList = glob.glob(dirPath + "/*")
     imgName1 = os.path.splitext(os.path.basename(imgPathList[0]))[0]
@@ -135,31 +143,19 @@ if require_midas:
     ):
         depth1 = cv2.imread("./depth/" + imgName1 + ".png", 0)
         depth2 = cv2.imread("./depth/" + imgName2 + ".png", 0)
-        # print("\n\nimg:", dispImg1)
-    # if os.path.isfile("./depth/" + imgName1 + ".npy") and os.path.isfile(
-    #     "./depth/" + imgName2 + ".npy"
-    # ):
-    #     dispImg1 = np.load("./depth/" + imgName1 + ".npy")
-    #     dispImg2 = np.load("./depth/" + imgName2 + ".npy")
-
-    # elif os.path.isfile("./depth/" + imgName1 + ".png") and os.path.isfile(
-    #     "./depth/" + imgName2 + ".png"
-    # ):
-    #     dispImg1 = cv2.imread("./depth/" + imgName1 + ".png", 0)
-    #     dispImg2 = cv2.imread("./depth/" + imgName2 + ".png", 0)
-    #     # print("\n\nimg:", dispImg1)
-
     if "depth1" in locals():
         Min, Max = np.min(depth1), np.max(depth1)
-        depthImg1 = (depth1 - Min) / (Max - Min) * 0.4 + 99.7
+        depthImg1 = (depth1 - Min) / (Max - Min) * 1940.0 + 6093
         # dispImg1 = (dispImg1 - Min) / (Max - Min) * 0.4 + 99.7
         Min, Max = np.min(depth2), np.max(depth2)
-        depthImg2 = (depth2 - Min) / (Max - Min) * 0.4 + 99.7
+        depthImg2 = (depth2 - Min) / (Max - Min) * 1940.0 + 6093
         # dispImg2 = (dispImg2 - Min) / (Max - Min) * 0.4 + 99.7
         # print(dispImg1)
         # print("dispMax:", np.max(depthImg1), "dispMin:", np.min(depthImg1))
         # Max, Min = np.max(depthImg1), np.min(depthImg1)
         # cv2.imwrite("ESTantinous.png", (depthImg1 - Min) / (Max - Min) * 255)
+        Max, Min = np.max(depthImg1), np.min(depthImg1)  #
+        print("depthMax:", np.max(depthImg1), "depthMin:", np.min(depthImg1))
 
 
 else:
@@ -173,7 +169,7 @@ else:
 
     Max, Min = np.max(depthImg1), np.min(depthImg1)  #
     print("depthMax:", np.max(depthImg1), "depthMin:", np.min(depthImg1))
-    print("depthMax:", np.max(depthImg2), "depthMin:", np.min(depthImg2))
+    # print("depthMax:", np.max(depthImg2), "depthMin:", np.min(depthImg2))
     # diff=dispImg1-dispImg2
 
     del dispImg1

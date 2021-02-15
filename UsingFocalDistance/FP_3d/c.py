@@ -66,7 +66,7 @@ def calcParameter():
     t_z1_est = 0.0
 
     # Gradient descend
-    for k in range(1000):
+    for k in range(50000):
         # initialization of grad
         r_x1_grad = r_y1_grad = r_z1_grad = 0
         t_x1_grad = t_y1_grad = t_z1_grad = 0
@@ -156,8 +156,10 @@ if __name__ == "__main__":
     # print(p_c1_org.shape)
     # print(p_c2_org.shape)
 
-    p_c1_org = np.load("input_Cam000.npy")
-    p_c2_org = np.load("input_Cam080.npy")
+    # p_c1_org = np.load("input_Cam000.npy") / 10000.0
+    # p_c2_org = np.load("input_Cam080.npy") / 10000.0
+    p_c1_org = np.load("2.npy") / 10000.0
+    p_c2_org = np.load("3.npy") / 10000.0
     NUM_PT = p_c1_org.shape[0]
     print(p_c1_org.shape)
     print(p_c2_org.shape)

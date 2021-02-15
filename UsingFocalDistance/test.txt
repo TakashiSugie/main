@@ -1,0 +1,25 @@
+Wed Feb 10 14:18:10 2021       
++-----------------------------------------------------------------------------+
+| NVIDIA-SMI 450.102.04   Driver Version: 450.102.04   CUDA Version: 11.0     |
+|-------------------------------+----------------------+----------------------+
+| GPU  Name        Persistence-M| Bus-Id        Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp  Perf  Pwr:Usage/Cap|         Memory-Usage | GPU-Util  Compute M. |
+|                               |                      |               MIG M. |
+|===============================+======================+======================|
+|   0  GeForce RTX 207...  Off  | 00000000:01:00.0  On |                  N/A |
+| 23%   29C    P8    18W / 235W |   1218MiB /  7979MiB |      3%      Default |
+|                               |                      |                  N/A |
++-------------------------------+----------------------+----------------------+
+                                                                               
++-----------------------------------------------------------------------------+
+| Processes:                                                                  |
+|  GPU   GI   CI        PID   Type   Process name                  GPU Memory |
+|        ID   ID                                                   Usage      |
+|=============================================================================|
+|    0   N/A  N/A      2304      G   /usr/lib/xorg/Xorg                 26MiB |
+|    0   N/A  N/A      2372      G   /usr/bin/gnome-shell               49MiB |
+|    0   N/A  N/A      2900      G   /usr/lib/xorg/Xorg                261MiB |
+|    0   N/A  N/A      3033      G   /usr/bin/gnome-shell              225MiB |
+|    0   N/A  N/A     16157      G   ...AAAAAAAAA= --shared-files      182MiB |
+|    0   N/A  N/A     24671      G   ...gAAAAAAAAA --shared-files      467MiB |
++-----------------------------------------------------------------------------+

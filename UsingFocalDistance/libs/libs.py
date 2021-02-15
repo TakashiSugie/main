@@ -8,6 +8,7 @@ from libs.variable import paraDict, LFName, depthImg1, depthImg2
 f_mm = paraDict["focal_length_mm"]
 s_mm = paraDict["sensor_size_mm"]
 b_mm = paraDict["baseline_mm"]
+fd_mm = paraDict["focus_distance_m"] * 1000.0
 longerSide = max(depthImg1.shape[0], depthImg1.shape[1])
 beta = b_mm * f_mm * longerSide
 f_pix = (f_mm * longerSide) / s_mm

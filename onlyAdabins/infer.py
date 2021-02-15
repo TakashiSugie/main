@@ -177,7 +177,7 @@ if __name__ == "__main__":
     import glob
     import cv2
 
-    from libsLink.variable import (
+    from libsLink3.variable import (
         imgName1,
         imgName2,
         basePath,
