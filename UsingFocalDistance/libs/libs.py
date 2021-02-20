@@ -26,6 +26,8 @@ def pix2m_disp(x, y, imgIdx):
         Z = depthImg2[x][y]
     X = (float(x) - float(depthImg1.shape[1] / 2.0)) * Z / f_pix
     Y = (float(y) - float(depthImg1.shape[0] / 2.0)) * Z / f_pix
+    # X = (float(x) - float(depthImg1.shape[1])) * Z / f_pix
+    # Y = (float(y) - float(depthImg1.shape[0])) * Z / f_pix
 
     # return X, Y, Z * (1.0 / 170.0)  # 単位はmm
     return X, Y, Z  # 単位はmm

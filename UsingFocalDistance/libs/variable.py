@@ -71,7 +71,7 @@ def disp2depth(dispImg):
             depthImg[x][y] = float(beta * fd_mm) / float(
                 (-dispImg[x][y] * fd_mm * s_mm + beta)
             )
-    # return depthImg
+    return depthImg
     Min, Max = np.min(dispImg), np.max(dispImg)
     dispImg = (dispImg - Min) / (Max - Min) * 1940 + 6093
     return dispImg
@@ -82,19 +82,31 @@ u2, v2 = 8, 8  # 0~8(uが→方向　vが下方向)
 # u2, v2 = 0, 1  # 0~8(uが→方向　vが下方向)
 camNum1 = u1 * 9 + v1
 camNum2 = u2 * 9 + v2
-cgPath = True
-setFPAuto = True
-useManualFP = False
-require_midas = False
+
+S_Z1 = 1
+S_Z2 = 1
+
+content = "additional"
+# content = "lf"
+# content = "ori"
+
+if content == "additional":
+    cgPath = True
+    setFPAuto = True
+    useManualFP = False
+    require_midas = False
+elif content == "ori":
+    cgPath = False
+    setFPAuto = False
+    useManualFP = True
+    require_midas = True
+
 # longerSideLen = 160
 # longerSideLen = 1008
 longerSideLen = 640
 renderingPly = {1: "mesh1", 2: "mesh2", 3: "mesh2_1", 4: "mesh1+mesh2_1", 5: "middle"}
-renderingMode = 1
+renderingMode = 4
 splitRate = 1.0
-content = "additional"
-# content = "lf"
-# content = "ori"
 
 if content == "ori":
     basePath = "/home/takashi/Desktop/dataset/image"
@@ -109,7 +121,7 @@ if content == "ori":
 
 else:
     basePath = os.path.join("/home/takashi/Desktop/dataset/lf_dataset", content)
-    LFName = "antinous"
+    LFName = "dishes"
     if content == "additional":
         imgName1 = "input_Cam{:03}".format(camNum1)
         imgName2 = "input_Cam{:03}".format(camNum2)
@@ -161,6 +173,7 @@ if require_midas:
 else:
     dispImg1 = matLoad(u1, v1)
     dispImg2 = matLoad(u2, v2)
+    # dispImg2 = matLoad(v2, u2)
     depthImg1 = disp2depth(dispImg1)
     depthImg2 = disp2depth(dispImg2)
 
@@ -174,7 +187,7 @@ else:
 
     del dispImg1
     del dispImg2
-    # cv2.imwrite("GTantinous.png", (depthImg1 - Min) / (Max - Min) * 255)
+    cv2.imwrite("GTdishes.png", (depthImg1 - Min) / (Max - Min) * 255)
 
 # ここをMidasOnlyから出てきたNpyに書き換える
 # Depthとかは正直おかしいかもしれないが、そこに関してはスルー

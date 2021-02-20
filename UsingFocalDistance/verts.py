@@ -17,12 +17,26 @@ def flatten(list):
     return flattenArray
 
 
+def setMinMax_(array):  # 最初のmeshの最大最小を覚えておくという関数
+    global sameMax, sameMin
+    for i in range(3):
+        if len(sameMax) < 4:
+            sameMax.append(np.max(array[:, i]))
+            sameMin.append(np.min(array[:, i]))
+
+    print("sameMax:", sameMax)
+    print("sameMin:", sameMin)
+
+
 def setMinMax(array):  # 最初のmeshの最大最小を覚えておくという関数
     global sameMax, sameMin
     for i in range(3):
         if len(sameMax) < 4:
             sameMax.append(np.max(array[:, i]))
             sameMin.append(np.min(array[:, i]))
+
+    print("sameMax:", sameMax)
+    print("sameMin:", sameMin)
 
 
 def setSameXY(array):  # xとy最大値でxとyを正規化, Zだけわかんないから-1~1で正規化
@@ -81,7 +95,7 @@ def setVerts(mesh_fi):
     verts_np = mmNormal(verts_np)
     vertices = flatten(verts_np)
     colors = flatten(colors_np / 255.0)
-    print(colors[0:5])
+    # print(colors[0:5])
     return colors, vertices
 
 

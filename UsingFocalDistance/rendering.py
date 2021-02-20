@@ -28,7 +28,8 @@ Distance = 7.0
 px, py = -1, -1
 windowSize = 1024  # 512
 angleRange = 5.0
-renderingMode = 4
+moveScale = 5
+# renderingMode = 4
 if renderingMode == 1:
     plyName = imgName1
 elif renderingMode == 2:
@@ -116,24 +117,24 @@ def keyboard(key, x, y):
     elif key.decode() == "q":
         sys.exit()
     elif key.decode() == "d":
-        Angle2 += 1.0
+        Angle2 += 1.0 * moveScale
         glutPostRedisplay()
     elif key.decode() == "a":
-        Angle2 -= 1.0
+        Angle2 -= 1.0 * moveScale
         glutPostRedisplay()
     elif key.decode() == "w":
-        Angle1 += 1.0
+        Angle1 += 1.0 * moveScale
         glutPostRedisplay()
 
     elif key.decode() == "s":
-        Angle1 -= 1.0
+        Angle1 -= 1.0 * moveScale
         glutPostRedisplay()
     elif key.decode() == "-":
-        Distance += 0.1
+        Distance += 0.1 * moveScale
         glutPostRedisplay()
 
     elif key.decode() == "+":
-        Distance -= 0.1
+        Distance -= 0.1 * moveScale
         glutPostRedisplay()
 
     elif key.decode() == "c":

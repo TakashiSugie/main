@@ -25,8 +25,8 @@ def calcSz1Sz2(M):
     # SR = M[:, 0:3].T  # こっちのほうがなんかあってるぽい、多分SZ<1だから
     SR = M[:, 0:3]
     # T = M[:, 3]
-    sz1 = 1
-    sz2 = 1
+    sz1 = 1.0
+    sz2 = 1.0
     norm0, norm1 = calcNorm(SR)
     while True:
         sz1Matrix = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1.0 / sz1]])
@@ -42,29 +42,16 @@ def calcSz1Sz2(M):
             print("this loss is minimum")
             break
         count += 1
-        sz1 += 0.1
-        sz2 += 0.1
-
-    # szInv1 = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1.0 / sz1]])
-    # szInv2 = np.array([[1, 0, 0], [0, 1, 0], [0, 0, sz2]])
-    # print(sz1, sz2)
-    # R1 = np.dot(szInv1, R12)
-    # SR = np.dot(R1, szInv2)
-    # print(M)
-    # print(SR)
-
-    # print(norm0)
-    # print(norm1)
+        sz1 += 1
+        sz2 += 1
+    # sz1 = sz2 = 2.0
 
     return sz1, sz2, R12
 
 
 def calcT12(M):
     t = M[:, 3]
-    print(sz1)
-    # t[2] = t[2]*sz1*((3.48817945e-02)/(8.54605149e-02))**2
-    # t[2] = t[2]*sz1*(-8.54605149e-02)/(3.48817945e-02)
-    # t[2] = t[2] /sz1
+    # print(sz1)
     return t
 
 
@@ -83,6 +70,7 @@ def calcMiddlePara(sz1, sz2, R, T, splitRate=2.0):
     sz1, sz2 = sz1 * manualNum, sz2 * manualNum
     MiddleSz1, MiddleSz2 = sz1, sz2
     T[2] = T[2] * MiddleSz1  # ここをなんとか工夫してM=Middle*Middleにしたい
+    # T[2] = T[2] * MiddleSz1  # ここをなんとか工夫してM=Middle*Middleにしたい
 
     MiddleT = T / splitRate
 
@@ -104,8 +92,8 @@ def calcMFromPara(sz1, sz2, R, T):
     InvCalcM = np.linalg.inv(calcM)
 
     calcMSquare = np.dot(calcM, calcM)
-    print("Square:\n", calcMSquare)
-    print("calc:\n", calcM)
+    # print("Square:\n", calcMSquare)
+    # print("calc:\n", calcM)
 
     calcM = calcM[:3, :]
     InvCalcM = InvCalcM[:3, :]
@@ -128,8 +116,8 @@ if __name__ == "__main__":  # 結局このままだと回転行列は用いる�
         sz1=sz1, sz2=sz2, R=R12, T=t12, splitRate=splitRate
     )
     MiddleM, MiddleMInv = calcMFromPara(MiddleSz1, MiddleSz2, MiddleR, MiddleT)
-    print("Inv\n: ", MiddleMInv)
-    print("Middle\n: ", MiddleM)
+    # print("Inv\n: ", MiddleMInv)
+    # print("Middle\n: ", MiddleM)
     # calcM(sz1, sz2, R12, t12)
     # M = np.load("antinous_0_1.npy")
 

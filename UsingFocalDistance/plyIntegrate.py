@@ -6,11 +6,11 @@ import sys
 # import glob
 import copy
 from libs.plyClass import Ply
-from libs.variable import imgName1, imgName2, saveName, splitRate
+from libs.variable import imgName1, imgName2, saveName, splitRate, S_Z1, S_Z2
 
 
 def meshChange(mesh, r=255, g=255, b=255, sigma=1.0, alpha=255):
-    mesh.changeColor(sigma=sigma)
+    mesh.changeColor(r=r, g=g, b=b)
     if not alpha == 255:
         mesh.changeAlpha(alpha=alpha)
         print("alpha change")
@@ -20,6 +20,8 @@ def meshChange(mesh, r=255, g=255, b=255, sigma=1.0, alpha=255):
 
 mesh1_fi = "./mesh/" + imgName1 + ".ply"
 mesh2_fi = "./mesh/" + imgName2 + ".ply"
+# mesh1_fi = "./mesh/sz=1.ply"
+# mesh2_fi = "./mesh/sz=10.ply"
 meshMiddle_fi = "./mesh/" + saveName + "middle.ply"
 dotM_save_fi = "./mesh/" + saveName + ".ply"
 
@@ -33,20 +35,31 @@ meshTemp2 = Ply(mesh2_fi)
 npyMiddlePath = "./M/" + "%s_middleM.npy" % saveName
 npyMiddleInvPath = "./M/" + "%s_middleMInv.npy" % saveName
 # npyMiddleInvPath = "./M/" + "GradM.npy"
-# npyMiddlePath = "./M/" + "GradM.npy"
 
+# S_Z1 = 3.0
+# S_Z2 = 15.0
+print("S_Z1", S_Z1, "S_Z2", S_Z2)
+# npyMiddleInvPath = "./M/" + "GradM_%d_%d.npy" % (S_Z1, S_Z2)
+# myM = np.load(npyMiddlePath)
+# print("myM:\n", myM)
+
+# npyMiddlePath = "./M/" + "GradM_%d_%d.npy" % (S_Z1, S_Z2)
+
+
+# gradM = np.load(npyMiddlePath)
+# print("gradM:\n", gradM)
 npyMPath = "./M/" + saveName + ".npy"
 save_fi = "./mesh/" + saveName + "_integrated.ply"
 
 
 def integrate(meshList):
     dstMesh = meshList[0]
-    # dstMesh = meshChange(dstMesh, r=0, alpha=128)
+    dstMesh = meshChange(dstMesh, r=0)
     # dstMesh = meshChange(dstMesh, sigma=255, alpha=255)
     for idx in range(len(meshList) - 1):
         print(idx)
         srcMesh = meshList[1 + idx]
-        # srcMesh = meshChange(srcMesh, sigma=255, alpha=255)
+        srcMesh = meshChange(srcMesh, g=0)
 
         dstMesh.integrate([srcMesh.v_infos, srcMesh.num_vertex])
     dstMesh.ClassWritePly(save_fi)
@@ -70,6 +83,7 @@ def main():
     if splitRate == 2:
         meshMiddle_MiddleInv = integrate([meshMiddle, meshMiddleInv])  # splitRate=2
     elif splitRate == 1:
+        # mesh1_2 = integrate([mesh1, mesh2])
         mesh12_2 = integrate([meshMiddle, mesh2])  # splitRate=1
         # mesh21_1 = integrate([meshMiddleInv, mesh1])  # splitRate=1
 
